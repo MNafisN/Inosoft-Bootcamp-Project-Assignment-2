@@ -6,6 +6,7 @@ use App\Helpers\MongoModel;
 class TaskRepository
 {
 	private MongoModel $tasks;
+	
 	public function __construct()
 	{
 		$this->tasks = new MongoModel('tasks');
@@ -18,15 +19,6 @@ class TaskRepository
 	{
 		$tasks = $this->tasks->get([]);
 		return $tasks;
-	}
-
-	/**
-	 * Untuk mendapatkan task bedasarkan id
-	 *  */
-	public function getById(string $id)
-	{
-		$task = $this->tasks->find(['_id'=>$id]);
-		return $task;
 	}
 
 	/**
@@ -47,11 +39,36 @@ class TaskRepository
 	}
 
 	/**
+	 * Untuk mendapatkan task bedasarkan id
+	 *  */
+	public function getById(string $id)
+	{
+		$task = $this->tasks->find(['_id'=>$id]);
+		return $task;
+	}
+
+	/**
 	 * Untuk menyimpan task baik untuk membuat baru atau menyimpan dengan struktur bson secara bebas
 	 *  */
 	public function save(array $editedData)
 	{
 		$id = $this->tasks->save($editedData);
 		return $id;
+	}
+
+	/**
+	 * Untuk menghapus task bedasarkan id
+	 *  */
+	public function delete(string $id) : ?string
+	{
+		$deleteTask = $this->tasks->find(['_id'=>$id]);
+
+		if(!$deleteTask) {
+			return null;
+		}
+
+		$taskTitle = $deleteTask['title'];
+		$this->tasks->deleteQuery(['_id'=>$id]);
+		return $taskTitle;
 	}
 }

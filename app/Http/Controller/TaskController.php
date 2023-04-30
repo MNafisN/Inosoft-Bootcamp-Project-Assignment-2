@@ -7,8 +7,10 @@ use App\Helpers\MongoModel;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class TaskController extends Controller {
+class TaskController extends Controller 
+{
 	private TaskService $taskService;
+
 	public function __construct() {
 		$this->taskService = new TaskService();
 	}
@@ -71,26 +73,22 @@ class TaskController extends Controller {
 	// TODO: deleteTask()
 	public function deleteTask(Request $request)
 	{
-		$mongoTasks = new MongoModel('tasks');
 		$request->validate([
 			'task_id'=>'required'
 		]);
 
 		$taskId = $request->task_id;
+		$task = $this->taskService->deleteTask($taskId);
 
-		$existTask = $mongoTasks->find(['_id'=>$taskId]);
-
-		if(!$existTask)
+		if(!$task)
 		{
 			return response()->json([
 				"message"=> "Task ".$taskId." tidak ada"
 			], 401);
 		}
 
-		$mongoTasks->deleteQuery(['_id'=>$taskId]);
-
 		return response()->json([
-			'message'=> 'Success delete task '.$taskId
+			'message'=> 'Success delete task titled : '.$taskId
 		]);
 	}
 

@@ -4,7 +4,8 @@ namespace App\ContohBootcamp\Services;
 
 use App\ContohBootcamp\Repositories\TaskRepository;
 
-class TaskService {
+class TaskService 
+{
 	private TaskRepository $taskRepository;
 
 	public function __construct() {
@@ -53,7 +54,21 @@ class TaskService {
 			$editTask['description'] = $formData['description'];
 		}
 
-		$id = $this->taskRepository->save( $editTask);
+		$id = $this->taskRepository->save($editTask);
 		return $id;
+	}
+
+	/**
+	 * NOTE: untuk menghapus task
+	 */
+	public function deleteTask(string $taskId) : ?string
+	{
+		$task = $this->taskRepository->delete($taskId);
+
+		if (!$task) {
+			return null;
+		}
+
+		return $task;
 	}
 }
