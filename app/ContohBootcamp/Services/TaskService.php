@@ -97,4 +97,26 @@ class TaskService
 		$task = $this->taskRepository->getById($assignedTaskId);
 		return $task;
 	}
+
+	/**
+	 * NOTE: untuk melakukan unassign task
+	 */
+	public function unassignTask(string $taskId) : ?array
+	{
+		$unassignTask = $this->taskRepository->getById($taskId);
+
+		if(!$unassignTask) {
+			return null;
+		}
+
+		if(isset($unassignTask['assigned'])) {
+			$unassignTask['assigned'] = null;	
+		} else {
+			return array("message" => "Task ".$taskId." sedang tidak dikerjakan oleh pengguna lain!");
+		}
+
+		$unassignedTaskId = $this->taskRepository->save($unassignTask);
+		$task = $this->taskRepository->getById($unassignedTaskId);
+		return $task;
+	}
 }

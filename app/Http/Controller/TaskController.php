@@ -118,26 +118,20 @@ class TaskController extends Controller
 	// TODO: unassignTask()
 	public function unassignTask(Request $request)
 	{
-		$mongoTasks = new MongoModel('tasks');
 		$request->validate([
 			'task_id'=>'required'
 		]);
 
 		$taskId = $request->post('task_id');
-		$existTask = $mongoTasks->find(['_id'=>$taskId]);
 
-		if(!$existTask)
+		$task = $this->taskService->unassignTask($taskId);
+
+		if(!$task)
 		{
 			return response()->json([
 				"message"=> "Task ".$taskId." tidak ada"
 			], 401);
 		}
-
-		$existTask['assigned'] = null;
-
-		$mongoTasks->save($existTask);
-
-		$task = $mongoTasks->find(['_id'=>$taskId]);
 
 		return response()->json($task);
 	}
