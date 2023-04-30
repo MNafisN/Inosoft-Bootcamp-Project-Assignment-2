@@ -88,14 +88,13 @@ class TaskController extends Controller
 		}
 
 		return response()->json([
-			'message'=> 'Success delete task titled : '.$taskId
+			'message'=> 'Success delete task titled : '.$task
 		]);
 	}
 
 	// TODO: assignTask()
 	public function assignTask(Request $request)
 	{
-		$mongoTasks = new MongoModel('tasks');
 		$request->validate([
 			'task_id'=>'required',
 			'assigned'=>'required'
@@ -103,20 +102,15 @@ class TaskController extends Controller
 
 		$taskId = $request->get('task_id');
 		$assigned = $request->post('assigned');
-		$existTask = $mongoTasks->find(['_id'=>$taskId]);
 
-		if(!$existTask)
+		$task = $this->taskService->assignTask($taskId, $assigned);
+
+		if(!$task)
 		{
 			return response()->json([
 				"message"=> "Task ".$taskId." tidak ada"
 			], 401);
 		}
-
-		$existTask['assigned'] = $assigned;
-
-		$mongoTasks->save($existTask);
-
-		$task = $mongoTasks->find(['_id'=>$taskId]);
 
 		return response()->json($task);
 	}

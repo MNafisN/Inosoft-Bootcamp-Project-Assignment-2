@@ -59,16 +59,9 @@ class TaskRepository
 	/**
 	 * Untuk menghapus task bedasarkan id
 	 *  */
-	public function delete(string $id) : ?string
+	public function delete(array $deleteData)
 	{
-		$deleteTask = $this->tasks->find(['_id'=>$id]);
-
-		if(!$deleteTask) {
-			return null;
-		}
-
-		$taskTitle = $deleteTask['title'];
-		$this->tasks->deleteQuery(['_id'=>$id]);
-		return $taskTitle;
+		$this->tasks->deleteQuery($deleteData);
 	}
+
 }

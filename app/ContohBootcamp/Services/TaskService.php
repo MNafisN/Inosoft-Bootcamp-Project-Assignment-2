@@ -63,12 +63,38 @@ class TaskService
 	 */
 	public function deleteTask(string $taskId) : ?string
 	{
-		$task = $this->taskRepository->delete($taskId);
+		$task = $this->taskRepository->getById($taskId);
 
-		if (!$task) {
+		if(!$task) {
 			return null;
 		}
 
+		$taskTitle = $task['title'];
+		$this->taskRepository->delete(['_id'=>$taskId]);
+
+		return $taskTitle;
+	}
+
+	/**
+	 * NOTE: untuk melakukan assign task
+	 */
+	public function assignTask(string $taskId, string $assigned) : ?array
+	{
+		$assignTask = $this->taskRepository->getById($taskId);
+
+		if(!$assignTask) {
+			return null;
+		}
+
+		if(isset($assignTask['assigned'])) {
+			return array("message" => "Task ".$taskId." sedang dikerjakan oleh pengguna lain");
+		} else {
+			$assignTask['assigned'] = $assigned;	
+			// array_push($assignTask['assigned'], $assigned);
+		}
+
+		$assignedTaskId = $this->taskRepository->save($assignTask);
+		$task = $this->taskRepository->getById($assignedTaskId);
 		return $task;
 	}
 }
