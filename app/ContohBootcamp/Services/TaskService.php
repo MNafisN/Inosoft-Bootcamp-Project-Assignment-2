@@ -90,7 +90,6 @@ class TaskService
 			return array("message" => "Task ".$taskId." sedang dikerjakan oleh pengguna lain");
 		} else {
 			$assignTask['assigned'] = $assigned;	
-			// array_push($assignTask['assigned'], $assigned);
 		}
 
 		$assignedTaskId = $this->taskRepository->save($assignTask);
@@ -117,6 +116,17 @@ class TaskService
 
 		$unassignedTaskId = $this->taskRepository->save($unassignTask);
 		$task = $this->taskRepository->getById($unassignedTaskId);
+		return $task;
+	}
+
+	/**
+	 * NOTE: untuk menambahkan subtask
+	 */
+	public function createSubtask(array $taskQuery, array $formData) : array
+	{		
+		$editedtask = $this->taskRepository->createSubtask($taskQuery, $formData);
+		$task = $this->taskRepository->getById($editedtask);
+
 		return $task;
 	}
 }

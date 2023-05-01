@@ -139,39 +139,24 @@ class TaskController extends Controller
 	// TODO: createSubtask()
 	public function createSubtask(Request $request)
 	{
-		$mongoTasks = new MongoModel('tasks');
 		$request->validate([
 			'task_id'=>'required',
 			'title'=>'required|string',
 			'description'=>'required|string'
 		]);
 
-		$taskId = $request->post('task_id');
-		$title = $request->post('title');
-		$description = $request->post('description');
+		$data = $request->only('task_id', 'title', 'description');
 
-		$existTask = $mongoTasks->find(['_id'=>$taskId]);
+		$taskQuery = $this->taskService->getById($data['task_id']);
 
-		if(!$existTask)
+		if(!$taskQuery)
 		{
 			return response()->json([
-				"message"=> "Task ".$taskId." tidak ada"
+				"message"=> "Task ".$data['task_id']." tidak ada"
 			], 401);
 		}
 
-		$subtasks = isset($existTask['subtasks']) ? $existTask['subtasks'] : [];
-
-		$subtasks[] = [
-			'_id'=> (string) new \MongoDB\BSON\ObjectId(),
-			'title'=>$title,
-			'description'=>$description
-		];
-
-		$existTask['subtasks'] = $subtasks;
-
-		$mongoTasks->save($existTask);
-
-		$task = $mongoTasks->find(['_id'=>$taskId]);
+		$task = $this->taskService->createSubtask($taskQuery, $data);
 
 		return response()->json($task);
 	}

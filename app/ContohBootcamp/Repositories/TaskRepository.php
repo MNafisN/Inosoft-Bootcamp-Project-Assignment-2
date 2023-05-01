@@ -64,4 +64,22 @@ class TaskRepository
 		$this->tasks->deleteQuery($deleteData);
 	}
 
+	/**
+	 * Untuk membuat Subtask
+	 */
+	public function createSubtask(array $task, array $data)
+	{
+		$subtasks = isset($task['subtasks']) ? $task['subtasks'] : [];
+
+		$subtasks[] = [
+			'_id'=> (string) new \MongoDB\BSON\ObjectId(),
+			'title'=>$data['title'],
+			'description'=>$data['description']
+		];
+
+		$task['subtasks'] = $subtasks;
+
+		$id = $this->tasks->save($task);
+		return $id;
+	}
 }
