@@ -164,43 +164,24 @@ class TaskController extends Controller
 	// TODO deleteSubTask()
 	public function deleteSubtask(Request $request)
 	{
-		$mongoTasks = new MongoModel('tasks');
 		$request->validate([
 			'task_id'=>'required',
 			'subtask_id'=>'required'
 		]);
 
-		$taskId = $request->post('task_id');
-		$subtaskId = $request->post('subtask_id');
+		$data = $request->only('task_id', 'subtask_id');
 
-		$existTask = $mongoTasks->find(['_id'=>$taskId]);
+		$taskQuery = $this->taskService->getById($data['task_id']);
 
-		if(!$existTask)
+		if(!$taskQuery)
 		{
 			return response()->json([
-				"message"=> "Task ".$taskId." tidak ada"
+				"message"=> "Task ".$data['task_id']." tidak ada"
 			], 401);
 		}
 
-		$subtasks = isset($existTask['subtasks']) ? $existTask['subtasks'] : [];
-
-		// Pencarian dan penghapusan subtask
-		$subtasks = array_filter($subtasks, function($subtask) use($subtaskId) {
-			if($subtask['_id'] == $subtaskId)
-			{
-				return false;
-			} else {
-				return true;
-			}
-		});
-		$subtasks = array_values($subtasks);
-		$existTask['subtasks'] = $subtasks;
-
-		$mongoTasks->save($existTask);
-
-		$task = $mongoTasks->find(['_id'=>$taskId]);
+		$task = $this->taskService->deleteSubtask($taskQuery, $data);
 
 		return response()->json($task);
 	}
-
 }

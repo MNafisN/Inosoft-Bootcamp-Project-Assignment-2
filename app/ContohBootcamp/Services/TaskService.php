@@ -129,4 +129,15 @@ class TaskService
 
 		return $task;
 	}
+
+	/**
+	 * NOTE: untuk menghapus subtask
+	 */
+	public function deleteSubtask(array $taskQuery, array $formData) : array
+	{		
+		$editedtask = $this->taskRepository->deleteSubtask($taskQuery, $formData);
+		$task = $this->taskRepository->getById($editedtask);
+
+		return $task;
+	}
 }

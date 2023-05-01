@@ -82,4 +82,28 @@ class TaskRepository
 		$id = $this->tasks->save($task);
 		return $id;
 	}
+
+	/**
+	 * Untuk menghapus Subtask
+	 */
+	public function deleteSubtask(array $task, array $data)
+	{
+		$subtasks = isset($task['subtasks']) ? $task['subtasks'] : [];
+		$subtaskId = $data['subtask_id'];
+
+		// Pencarian dan penghapusan subtask
+		$subtasks = array_filter($subtasks, function($subtask) use($subtaskId) {
+			if($subtask['_id'] == $subtaskId) {
+				return false;
+			} else {
+				return true;
+			}
+		});
+
+		$subtasks = array_values($subtasks);
+		$task['subtasks'] = $subtasks;
+
+		$id = $this->tasks->save($task);
+		return $id;
+	}
 }
