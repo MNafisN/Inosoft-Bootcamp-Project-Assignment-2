@@ -18,7 +18,7 @@ class TaskController extends Controller
 	public function showTasks()
 	{
 		$tasks = $this->taskService->getTasks();
-		return response()->json($tasks);
+		return response()->json($tasks, 200);
 	}
 
 	public function createTask(Request $request)
@@ -44,7 +44,10 @@ class TaskController extends Controller
 		$id = $this->taskService->addTask($dataSaved);
 		$task = $this->taskService->getById($id);
 
-		return response()->json($task);
+		return response()->json([
+			'message' => 'Task ditambahkan',
+			'task_data' => $task
+		], 200);
 	}
 
 
@@ -66,7 +69,10 @@ class TaskController extends Controller
 
 		$task = $this->taskService->getById($taskId);
 
-		return response()->json($task);
+		return response()->json([
+			'message' => 'Task diperbarui',
+			'task_data' => $task
+		], 200);
 	}
 
 
@@ -84,12 +90,12 @@ class TaskController extends Controller
 		{
 			return response()->json([
 				"message"=> "Task ".$taskId." tidak ada"
-			], 401);
+			], 404);
 		}
 
 		return response()->json([
 			'message'=> 'Success delete task titled : '.$task
-		]);
+		], 200);
 	}
 
 	// TODO: assignTask()
@@ -109,10 +115,12 @@ class TaskController extends Controller
 		{
 			return response()->json([
 				"message"=> "Task ".$taskId." tidak ada"
-			], 401);
+			], 404);
 		}
 
-		return response()->json($task);
+		return response()->json([
+			"message" => "Sukses menugaskan pengguna ".$assigned." ke task ".$taskId
+		], 200);
 	}
 
 	// TODO: unassignTask()
@@ -130,10 +138,12 @@ class TaskController extends Controller
 		{
 			return response()->json([
 				"message"=> "Task ".$taskId." tidak ada"
-			], 401);
+			], 404);
 		}
 
-		return response()->json($task);
+		return response()->json([
+			"message" => "Pengguna yang ditugaskan pada task ".$taskId." sudah selesai bertugas"
+		], 200);
 	}
 
 	// TODO: createSubtask()
@@ -153,12 +163,15 @@ class TaskController extends Controller
 		{
 			return response()->json([
 				"message"=> "Task ".$data['task_id']." tidak ada"
-			], 401);
+			], 404);
 		}
 
 		$task = $this->taskService->createSubtask($taskQuery, $data);
 
-		return response()->json($task);
+		return response()->json([
+			'message' => 'Subtask ditambahkan',
+			'task_data' => $task
+		], 200);
 	}
 
 	// TODO deleteSubTask()
@@ -177,11 +190,14 @@ class TaskController extends Controller
 		{
 			return response()->json([
 				"message"=> "Task ".$data['task_id']." tidak ada"
-			], 401);
+			], 404);
 		}
 
 		$task = $this->taskService->deleteSubtask($taskQuery, $data);
 
-		return response()->json($task);
+		return response()->json([
+			"message" => "Subtask ".$data['subtask_id']." telah dihapus",
+			"task_data" => $task
+		], 200);
 	}
 }
